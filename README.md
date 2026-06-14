@@ -1,47 +1,74 @@
-# Corpmind: Corporate Knowledge Base Assistant
+# Corpmind: Corporate Knowledge Base Assistant (Advanced RAG vs Basic RAG)
 
-A production-quality RAG system that demonstrates the power of **Advanced RAG (GraphRAG + LangGraph)** compared to **Basic RAG**.
+A production-quality AI-powered knowledge base assistant that compares **Basic RAG** and **Advanced RAG** architectures. This project demonstrates cutting-edge techniques in Retrieval-Augmented Generation, including GraphRAG, Corrective RAG (CRAG), and agentic orchestration with LangGraph.
 
-## Features
+## 🚀 Overview
 
-- **Basic RAG**: Fixed-size chunking, ChromaDB vector search, Mistral Large generation.
-- **Advanced RAG**:
-  - **Parent-Child Chunking**: Better context retention.
-  - **Query Expansion**: Multi-query variations for robust retrieval.
-  - **Hybrid Retrieval**: Combines Vector search (Chroma) with Graph search (Neo4j).
-  - **Corrective RAG (CRAG)**: Evaluates retrieval quality and retries if necessary.
-  - **Re-ranking**: Prioritizes the most relevant context before generation.
-- **Agentic Orchestration**: Managed by **LangGraph** for stateful, cyclic workflows.
-- **Knowledge Graph**: Entity and relationship extraction using **Mistral** and **Neo4j**.
-- **Evaluation Pipeline**: Benchmarks both systems across 10+ questions with automated comparison.
+Corpmind is designed to help organizations leverage their internal documentation more effectively. It provides two distinct retrieval strategies to show the evolution from simple vector search to complex, stateful retrieval pipelines.
 
-## Tech Stack
+### **1. Basic RAG Pipeline**
+*   **Chunking**: Fixed-size recursive character splitting.
+*   **Vector Store**: ChromaDB for semantic indexing.
+*   **Retrieval**: Top-K similarity search.
+*   **Generation**: Direct context-to-answer synthesis using Mistral Large.
 
-- **Backend**: FastAPI, LangChain, LangGraph
-- **Frontend**: React, TypeScript, Tailwind CSS
-- **LLM**: Mistral AI (Mistral Large)
-- **Databases**: ChromaDB (Vector), Neo4j (Graph)
+### **2. Advanced RAG Pipeline (Agentic GraphRAG)**
+*   **Orchestration**: Managed by **LangGraph** as a stateful, cyclic workflow.
+*   **Parent-Child Chunking**: Retrieves granular child chunks but provides full parent context to the LLM for better coherence.
+*   **Query Expansion**: Rewrites and expands user queries to handle linguistic variations.
+*   **Hybrid Retrieval**:
+    *   **Vector Search**: Multi-query retrieval from ChromaDB.
+    *   **Graph Retrieval**: Entity & relationship traversal using **Neo4j** (GraphRAG).
+*   **Corrective RAG (CRAG)**: An evaluator node grades retrieval quality. If relevance is low, the system triggers query refinement or fallbacks.
+*   **Re-ranking**: Uses an LLM-based scoring system (mimicking BGE-Reranker) to prioritize the most relevant snippets.
 
-## Prerequisites
+## 🛠️ Tech Stack
 
-- Python 3.10+
-- Node.js 18+
-- Mistral API Key
-- Neo4j Instance (Local or AuraDB)
+*   **LLM**: Mistral AI (Mistral Large 2)
+*   **Frameworks**: LangChain, LangGraph, FastAPI
+*   **Databases**: 
+    *   **ChromaDB** (Vector Database)
+    *   **Neo4j** (Graph Database)
+*   **Frontend**: React, TypeScript, Tailwind CSS, Lucide Icons
+*   **Processing**: PyMuPDF, Unstructured
 
-## Setup Instructions
+## 📁 Project Structure
 
-### 1. Backend Setup
+```text
+corpmind/
+├── backend/
+│   ├── app/
+│   │   ├── api/                # FastAPI Routers & Endpoints
+│   │   ├── core/               # Configuration (Pydantic Settings)
+│   │   ├── services/           # Business Logic
+│   │   │   ├── rag_basic.py    # Basic RAG Implementation
+│   │   │   └── rag_advanced/   # LangGraph Advanced Workflow
+│   │   ├── db/                 # DB Utils (Chroma & Neo4j)
+│   │   ├── ingestion/          # Vector & Graph Ingestors
+│   │   └── evaluation/         # RAG Benchmarking Pipeline
+│   └── requirements.txt        # Backend dependencies
+├── frontend/                   # React/Vite/TS Frontend
+├── data/                       # Sample corporate documents (.md)
+└── README.md                   # You are here
+```
 
+## ⚙️ Setup Instructions
+
+### 1. Prerequisites
+*   Python 3.10+
+*   Node.js 18+
+*   Neo4j (Local Desktop or AuraDB Cloud)
+*   Mistral API Key
+
+### 2. Backend Setup
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
+source venv/bin/activate  # Windows: .\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the `backend` directory:
-
+Create a `.env` file in `backend/`:
 ```env
 MISTRAL_API_KEY=your_key_here
 NEO4J_URI=bolt://localhost:7687
@@ -50,39 +77,31 @@ NEO4J_PASSWORD=your_password
 CHROMA_DB_PATH=./chroma_db
 ```
 
-### 2. Frontend Setup
-
+### 3. Frontend Setup
 ```bash
 cd frontend
 npm install
 ```
 
-### 3. Running the Application
-
-**Start the Backend:**
+### 4. Run the Application
+**Start Backend:**
 ```bash
 cd backend
-python app/main.py
+python -m app.main
 ```
 
-**Start the Frontend:**
+**Start Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
 
-## Usage
+## 📊 Evaluation & Benchmarking
 
-1.  Open `http://localhost:3000`.
-2.  Click **"Run Ingestion"** to process the sample documents in the `data/` folder.
-3.  Ask questions in the search bar to see side-by-side results.
-4.  Click **"Run Benchmarks"** to see the automated evaluation of both systems.
+The system includes a built-in evaluation pipeline that tests both RAG modes against 10 specific question types:
+*   **Factual**: Direct retrieval.
+*   **Paraphrased**: Testing query expansion robustness.
+*   **Multi-hop**: Requires following relationships (GraphRAG).
+*   **Unanswerable**: Testing hallucination resistance.
 
-## Evaluation Questions
-
-The system is pre-configured with 10 questions covering:
-- Factual queries
-- Paraphrased queries
-- Multi-hop reasoning (Graph required)
-- Relationship-based queries
-- Unanswerable queries
+Click **"Run Benchmarks"** in the dashboard to see a side-by-side performance analysis with automated LLM grading.
