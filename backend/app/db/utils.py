@@ -1,7 +1,7 @@
 import os
 from langchain_mistralai import MistralAIEmbeddings
-from langchain_community.vectorstores import Chroma
-from langchain_community.graphs import Neo4jGraph
+from langchain_chroma import Chroma
+from langchain_neo4j import Neo4jGraph
 from app.core.config import settings
 
 def get_embeddings():

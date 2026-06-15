@@ -1,5 +1,5 @@
 from langchain_mistralai import ChatMistralAI
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from app.db.utils import get_vector_store
 from app.core.config import settings
